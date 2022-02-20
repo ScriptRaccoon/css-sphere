@@ -1,0 +1,140 @@
+@use "sass:list";
+@use "sass:math";
+
+$size: 400px;
+$inner-perspective: 0.3 * $size;
+$outer-perspective: 1.25 * $size;
+
+$sin-values: -1, -0.984808, -0.93969, -0.866025, -0.766044, -0.642788,
+    -0.5, -0.34202, -0.173648, 0, 0.173648, 0.34202, 0.5, 0.642788,
+    0.766044, 0.866025, 0.939693, 0.984808, 1;
+$cos-values: 0, 0.173648, 0.34202, 0.5, 0.642788, 0.766044, 0.866025,
+    0.939693, 0.984808, 1, 0.984808, 0.939693, 0.866025, 0.766044,
+    0.642788, 0.5, 0.34202, 0.173648, 0;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #111;
+    overflow: hidden;
+    color: #fff;
+    font-family: Consolas, monospace;
+}
+
+#scene {
+    perspective: $outer-perspective;
+    transform-style: preserve-3d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: perspective 1s ease-in-out;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes rotatearound {
+    0% {
+        transform: rotateX(-20deg) rotateY(0deg);
+    }
+    10% {
+        transform: rotateX(-20deg) rotateY(36deg);
+    }
+    50% {
+        transform: rotateX(-70deg) rotateY(180deg);
+    }
+    60% {
+        transform: rotateX(-70deg) rotateY(216deg);
+    }
+    100% {
+        transform: rotateX(-20deg) rotateY(360deg);
+    }
+}
+
+#scene * {
+    transform-style: preserve-3d;
+    position: absolute;
+}
+
+#sphere {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    animation: rotatearound 40s linear infinite;
+
+    .longitudes,
+    .latitudes {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .longitude,
+    .latitude {
+        border-radius: 50%;
+        border: 5px solid;
+    }
+
+    .longitude {
+        border-color: #0f0a;
+        width: $size;
+        height: $size;
+    }
+
+    .latitude {
+        border-color: #0ffa;
+    }
+
+    $count: 19;
+
+    @for $i from 1 through $count {
+        .longitude:nth-child(#{$i}) {
+            transform: rotateY(#{math.div($i, $count) * 180}deg);
+        }
+    }
+
+    @for $i from 1 through $count {
+        $height: list.nth($sin-values, $i) * 0.5 * $size;
+        $s: list.nth($cos-values, $i) * $size;
+        .latitude:nth-child(#{$i}) {
+            width: #{$s};
+            height: #{$s};
+            transform: translateY(#{$height}) rotateX(90deg);
+        }
+    }
+}
+
+label {
+    position: absolute;
+    margin: 15px;
+    display: inline-block;
+    background-color: #444;
+    box-shadow: 0px 0px 10px #111a;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 18px;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+label:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+
+input {
+    display: none;
+}
+
+input:checked ~ #scene {
+    perspective: $inner-perspective;
+}
+
+input:not(:checked) ~ #scene {
+    perspective: $outer-perspective;
+}

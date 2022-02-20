@@ -1,0 +1,16 @@
+{
+  "name": "css-sphere",
+  "version": "1.0.0",
+  "description": "Sphere made with CSS",
+  "main": "public/index.html",
+  "scripts": {
+    "dev": "sass src/style.scss public/css/style.css --watch --no-source-map",
+    "build": "sass src/style.scss public/css/style.css --style compressed --no-source-map"
+  },
+  "keywords": [],
+  "author": "Script Raccoon",
+  "license": "MIT",
+  "devDependencies": {
+    "sass": "^1.49.8"
+  }
+}
