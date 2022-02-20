@@ -1,9 +1,11 @@
 @use "sass:list";
 @use "sass:math";
 
-$size: 400px;
-$inner-perspective: 0.3 * $size;
-$outer-perspective: 1.25 * $size;
+:root {
+    --size: min(600px, 80vw);
+    --inner-perspective: calc(0.3 * var(--size));
+    --outer-perspective: calc(1.25 * var(--size));
+}
 
 $sin-values: -1, -0.984808, -0.93969, -0.866025, -0.766044, -0.642788,
     -0.5, -0.34202, -0.173648, 0, 0.173648, 0.34202, 0.5, 0.642788,
@@ -26,7 +28,7 @@ body {
 }
 
 #scene {
-    perspective: $outer-perspective;
+    perspective: var(--outer-perspective);
     transform-style: preserve-3d;
     display: flex;
     justify-content: center;
@@ -78,33 +80,35 @@ body {
     .latitude {
         border-radius: 50%;
         border: 5px solid;
+        aspect-ratio: 1 / 1;
     }
 
     .longitude {
         border-color: #0f0a;
-        width: $size;
-        height: $size;
+        width: var(--size);
+        --angle: 0;
+        transform: rotateY(calc(var(--angle) * 1deg));
     }
 
     .latitude {
         border-color: #0ffa;
+        --sine: 0;
+        --cosine: 0;
+        width: calc(var(--cosine) * var(--size));
+        transform: translateY(calc(var(--sine) * 0.5 * var(--size)))
+            rotateX(90deg);
     }
 
     $count: 19;
 
     @for $i from 1 through $count {
         .longitude:nth-child(#{$i}) {
-            transform: rotateY(#{math.div($i, $count) * 180}deg);
+            --angle: #{math.div($i, $count) * 180};
         }
-    }
 
-    @for $i from 1 through $count {
-        $height: list.nth($sin-values, $i) * 0.5 * $size;
-        $s: list.nth($cos-values, $i) * $size;
         .latitude:nth-child(#{$i}) {
-            width: #{$s};
-            height: #{$s};
-            transform: translateY(#{$height}) rotateX(90deg);
+            --sine: #{list.nth($sin-values, $i)};
+            --cosine: #{list.nth($cos-values, $i)};
         }
     }
 }
@@ -132,9 +136,9 @@ input {
 }
 
 input:checked ~ #scene {
-    perspective: $inner-perspective;
+    perspective: var(--inner-perspective);
 }
 
 input:not(:checked) ~ #scene {
-    perspective: $outer-perspective;
+    perspective: var(--outer-perspective);
 }
